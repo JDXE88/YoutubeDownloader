@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+        /* Styles for the progress bar */
+        #progressWrapper {
+            margin-top: 20px;
+        }
+        #progressBar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 4px;
+            height: 20px;
+            overflow: hidden;
+        }
+        #progressBar div {
+            height: 100%;
+            width: 0;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+        #progressText {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Downloader</h1>
+        <form id="downloadForm">
+            <label for="videoUrl">YouTube Video URL:</label>
+            <input type="text" id="videoUrl" name="videoUrl" placeholder="Enter full video URL" required pattern="https://www\.youtube\.com/watch\?v=.*">
+
+            <label for="outputDirectory">Output Directory:</label>
+            <input type="text" id="outputDirectory" name="outputDirectory" placeholder="/data/data/com.termux/files/home/storage/shared/Download" required title="Enter a valid directory path. For example: /data/data/com.termux/files/home/storage/shared/Download">
+
+            <label for="contentType">Download Type:</label>
+            <select id="contentType" name="contentType">
+                <option value="" disabled selected>Select download type</option>
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+                <option value="subtitles">Subtitles Only</option>
+            </select>
+
+            <div id="audioOptions" class="hidden">
+                <label><input type="checkbox" id="convertToMp3" name="convertToMp3"> Convert to MP3</label>
+                <label for="audioFormat">Audio Format:</label>
+                <select id="audioFormat" name="audioFormat">
+                    <option value="mp3">MP3</option>
+                    <option value="wav">WAV</option>
+                    <option value="aac">AAC</option>
+                </select>
+
+                <label for="audioQuality">Audio Quality:</label>
+                <select id="audioQuality" name="audioQuality">
+                    <option value="0">Best</option>
+                    <option value="192">192 kbps</option>
+                    <option value="128">128 kbps</option>
+                </select>
+            </div>
+
+            <div id="videoOptions" class="hidden">
+                <label><input type="checkbox" id="downloadMp4" name="downloadMp4"> Download as MP4</label>
+                <label><input type="checkbox" id="downloadSubtitles" name="downloadSubtitles"> Download Subtitles</label>
+                <label for="subLang">Subtitles Language (e.g., "en" for English):</label>
+                <input type="text" id="subLang" name="subLang" placeholder="e.g., en" title="Enter language code like 'en' for English, 'es' for Spanish">
+            </div>
+
+            <div id="subtitlesOnlyOptions" class="hidden">
+                <!-- No options needed for subtitles only -->
+            </div>
+
+            <button type="button" id="downloadButton" disabled onclick="submitForm()">Download</button>
+        </form>
+
+        <!-- Progress bar elements -->
+        <div id="progressWrapper" class="hidden">
+            <div id="progressBar"><div></div></div>
+            <div id="progressText">Starting...</div>
+        </div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        document.getElementById('contentType').addEventListener('change', function () {
+            const audioOptions = document.getElementById('audioOptions');
+            const videoOptions = document.getElementById('videoOptions');
+            const subtitlesOnlyOptions = document.getElementById('subtitlesOnlyOptions');
+            const isAudio = this.value === 'audio';
+            const isVideo = this.value === 'video';
+            const isSubtitlesOnly = this.value === 'subtitles';
+
+            audioOptions.classList.toggle('hidden', !isAudio);
+            videoOptions.classList.toggle('hidden', !isVideo);
+            subtitlesOnlyOptions.classList.toggle('hidden', !isSubtitlesOnly);
+
+            document.getElementById('downloadButton').disabled = this.value === '';
+        });
+
+        function submitForm() {
+            const url = document.getElementById('videoUrl').value;
+            const directory = document.getElementById('outputDirectory').value;
+            const type = document.getElementById('contentType').value;
+            const convertToMp3 = document.getElementById('convertToMp3').checked;
+            const audioFormat = document.getElementById('audioFormat').value;
+            const audioQuality = document.getElementById('audioQuality').value;
+            const downloadSubtitles = document.getElementById('downloadSubtitles').checked;
+            const subLang = document.getElementById('subLang').value;
+            const downloadMp4 = document.getElementById('downloadMp4').checked;
+            const downloadSubtitlesOnly = type === 'subtitles';
+            const messageElement = document.getElementById('message');
+            const progressWrapper = document.getElementById('progressWrapper');
+            const progressBar = document.getElementById('progressBar').firstElementChild;
+            const progressText = document.getElementById('progressText');
+            const button = document.getElementById('downloadButton');
+
+            button.disabled = true;
+            messageElement.innerText = 'Processing...';
+            progressWrapper.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            progressText.innerText = 'Starting...';
+
+            fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    videoUrl: url,
+                    outputDirectory: directory,
+                    contentType: type,
+                    convertToMp3: convertToMp3,
+                    audioFormat: audioFormat,
+                    audioQuality: audioQuality,
+                    downloadSubtitles: downloadSubtitles,
+                    subLang: subLang,
+                    downloadMp4: downloadMp4,
+                    downloadSubtitlesOnly: downloadSubtitlesOnly
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    const reader = response.body.getReader();
+                    const total = +response.headers.get('Content-Length');
+                    let received = 0;
+
+                    return new Response(
+                        reader.read().then(function processText({ done, value }) {
+                            if (done) {
+                                return;
+                            }
+
+                            received += value.length;
+                            const percentage = (received / total) * 100;
+                            progressBar.style.width = percentage + '%';
+                            progressText.innerText = Math.round(percentage) + '% complete';
+
+                            return reader.read().then(processText);
+                        })
+                    ).text();
+                }
+                return response.text();
+            })
+            .then(data => {
+                if (data.includes('No subtitles available for this video.')) {
+                    messageElement.innerText = 'No subtitles available for this video.';
+                } else {
+                    messageElement.innerText = 'Download complete!';
+                    progressText.innerText = '100% complete';
+                }
+            })
+            .catch(error => {
+                messageElement.innerText = 'An error occurred: ' + error.message;
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
+        }
+
+        // Set default download type to 'Select download type' on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('contentType').value = '';
+            document.getElementById('downloadButton').disabled = true;
+        });
+    </script>
+</body>
+</html>

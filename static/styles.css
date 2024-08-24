@@ -1,0 +1,152 @@
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container Styles */
+.container {
+    width: 90%;
+    max-width: 600px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Heading Styles */
+h1 {
+    font-size: 28px;
+    color: #444;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Label Styles */
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #555;
+    text-align: left;
+}
+
+/* Input and Select Styles */
+input[type="text"], select {
+    width: calc(100% - 24px); /* Adjust for padding and border */
+    padding: 12px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #007bff;
+    background-color: #ffffff;
+    outline: none;
+}
+
+/* Button Styles */
+button {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #218838;
+    transform: scale(1.03);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Checkbox Styles */
+input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Message Styles */
+#message {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #d9534f;
+}
+
+/* Progress Bar Styles */
+#progressWrapper {
+    margin-top: 20px;
+}
+
+#progressBar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 4px;
+    height: 20px;
+    overflow: hidden;
+}
+
+#progressBar div {
+    height: 100%;
+    width: 0;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+
+#progressText {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+        width: 95%;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Styles for mandatory fields */
+.required-field::after {
+    content: " *";
+    color: red;
+}
+
+/* Error message styling */
+#errorMessage {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
