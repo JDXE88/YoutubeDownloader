@@ -61,3 +61,12 @@ This will print the absolute path of the current directory, which you can then u
 - Check the application logs or console output for specific error messages.
 
 For any additional issues, refer to the documentation of the dependencies or seek help from the relevant communities.
+
+## Screenshots
+
+![image](https://github.com/JDXE88/YoutubeDownloader/blob/main/screenshots/YoutubeDownloaderScreenshots%20(1).jpg)
+![image](https://github.com/JDXE88/YoutubeDownloader/blob/main/screenshots/YoutubeDownloaderScreenshots%20(2).jpg)
+![image](https://github.com/JDXE88/YoutubeDownloader/blob/main/screenshots/YoutubeDownloaderScreenshots%20(3).jpg)
+![image](https://github.com/JDXE88/YoutubeDownloader/blob/main/screenshots/YoutubeDownloaderScreenshots%20(4).jpg)
+![image](https://github.com/JDXE88/YoutubeDownloader/blob/main/screenshots/YoutubeDownloaderScreenshots%20(5).jpg)
+![image](https://github.com/JDXE88/YoutubeDownloader/blob/main/screenshots/YoutubeDownloaderScreenshots%20(6).jpg)
